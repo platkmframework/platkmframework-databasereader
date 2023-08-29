@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"org.platkmframework.databasereader.core","l":"DataBase"},{"p":"org.platkmframework.databasereader.core","l":"DatabaseReader"},{"p":"org.platkmframework.databasereader.core","l":"DataBaseReaderException"}];updateSearchResults();
