@@ -401,7 +401,7 @@ public class DatabaseReader  implements IDatabaseReader{
     
     
     protected List<Table> readBasicTableInfo(Connection customCon, String catalog,  String schemaPattern, 
-			 						String tableNamePattern,  String[] types,  List<String> excludedTables){
+			 						String tableNamePattern,  String[] types){
 			
 		List<Table> tables = new ArrayList<>();
 		try {
@@ -969,7 +969,7 @@ public class DatabaseReader  implements IDatabaseReader{
 	}
 	
 	public List<Table> getMetadata(Connection con, String table) { 
-		return readBasicTableInfo( con, null, null, table,new String[]{"TABLE"}, excludedTables);
+		return readBasicTableInfo( con, null, null, table,new String[]{"TABLE"});
 	}
 	
 //    private Entity getEntityByTableName(String tableName, Map<String, Entity> entitiesMap) {
