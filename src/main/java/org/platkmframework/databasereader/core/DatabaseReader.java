@@ -83,6 +83,11 @@ public class DatabaseReader implements IDatabaseReader {
      * nombre de la contraing de la tabla que tiene la foreing key
      */
     public static final String FK_NAME = "FK_NAME";
+    
+    /**
+     * sequence key
+     */
+    public static final String KEY_SEQ = "KEY_SEQ";
 
     /**
      * nombre de la tabla que tiene llaves foraneas
@@ -110,7 +115,7 @@ public class DatabaseReader implements IDatabaseReader {
      * operacion a realizar cdo la tabla principal
      * actualice un campo
      */
-    public static final String UPDATE_RULE = "DELETE_RULE";
+    public static final String UPDATE_RULE = "UPDATE_RULE";
 
     /**
      * Atributo COLUMN_NAME
@@ -455,7 +460,7 @@ public class DatabaseReader implements IDatabaseReader {
                 String tableType = rs.getString(4);
                 if ((excludedTables == null || excludedTables.isEmpty()) || !excludedTables.contains(tableName.toLowerCase())) {
                     try {
-                        rsTable = st.executeQuery("SELECT * FROM " + tableName + " WHERE 1=2");
+                        rsTable = st.executeQuery("SELECT * FROM " + (StringUtils.isBlank(catalog)?tableName:catalog + ".") + tableName + " WHERE 1=2");
                     } catch (Exception e) {
                         rsTable = null;
                         logger.error(e.getMessage());
@@ -618,8 +623,9 @@ public class DatabaseReader implements IDatabaseReader {
             while (foreignKeys.next()) {
                 importedKey = new ImportedKey();
                 importedKey.setId(Util.generateId(255));
-                importedKey.setPkTableName(foreignKeys.getString("PKTABLE_NAME"));
-                importedKey.setFkColumnName(foreignKeys.getString("FKCOLUMN_NAME"));
+                importedKey.setPkTableName(foreignKeys.getString(PKTABLE_NAME));
+                importedKey.setFkColumnName(foreignKeys.getString(FKCOLUMN_NAME));
+                importedKey.setPkColumnName(foreignKeys.getString(PKCOLUMN_NAME)); 
                 result.add(importedKey);
             }
         } catch (SQLException ex) {
@@ -644,22 +650,22 @@ public class DatabaseReader implements IDatabaseReader {
             ResultSet foreignKeys = databaseMetaData.getImportedKeys(null, null, tableName);
             FkContraint fkContraint;
             while (foreignKeys.next()) {
-                pkTableName = foreignKeys.getString("PKTABLE_NAME");
+                pkTableName = foreignKeys.getString(PKTABLE_NAME);
                 if (!mapFKs.containsKey(pkTableName)) {
                     fkContraint = new FkContraint();
                     fkContraint.setId(Util.generateId(255));
                     fkContraint.setPkTableName(pkTableName);
-                    fkContraint.setFkName(foreignKeys.getString("FK_NAME"));
+                    fkContraint.setFkName(foreignKeys.getString(FK_NAME));
                     fkContraint.setFkTableName(tableName);
                     mapFKs.put(pkTableName, fkContraint);
                 }
                 importedKey = new ImportedKey();
                 importedKey.setId(Util.generateId(255));
-                importedKey.setPkTableName(foreignKeys.getString("PKTABLE_NAME"));
-                importedKey.setDeleteRule(foreignKeys.getString("DELETE_RULE"));
-                importedKey.setFkColumnName(foreignKeys.getString("FKCOLUMN_NAME"));
-                importedKey.setKeySeq(foreignKeys.getString("KEY_SEQ"));
-                importedKey.setPkColumnName(foreignKeys.getString("PKCOLUMN_NAME"));
+                importedKey.setPkTableName(foreignKeys.getString(PKTABLE_NAME));
+                importedKey.setDeleteRule(foreignKeys.getString(DELETE_RULE));
+                importedKey.setFkColumnName(foreignKeys.getString(FKCOLUMN_NAME));
+                importedKey.setKeySeq(foreignKeys.getString(KEY_SEQ));
+                importedKey.setPkColumnName(foreignKeys.getString(PKCOLUMN_NAME));
                 mapFKs.get(pkTableName).getImportedKey().add(importedKey);
             }
         } catch (SQLException ex) {
